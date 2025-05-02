@@ -1,0 +1,57 @@
+import requests
+
+api_key = "505480d7"
+base_url = "http://www.omdbapi.com/"
+
+def search_movies(query):
+    params = {
+        "apikey": api_key,
+        "s": query
+    }
+    try:
+        response = requests.get(base_url, params=params)
+        
+        if response.status_code != 200:
+            print(f"Опшипка при получении данных: статус-код {response.status_code}.")
+            return None
+            
+        data = response.json()
+        
+        if data.get('Response') == 'False':
+            print(f"Произошла опшипка: {data.get('Error')}." )
+            return None
+        
+        return data.get('Search')
+    
+    except Exception as e:
+        print(f"Возникла опшипка: {e}")
+        return None
+
+
+def display_results(movies):
+
+    for movie in movies:
+        title = movie.get('Title', '')
+        year = movie.get('Year', '')
+        type_ = movie.get('Type', '')
+        print(f"Название: {title}, Год: {year}, Тип: {type_}")
+
+
+def main():
+    while True:
+        user_input = input("\nВведите название фильма (или напишите 'выход' чтобы завершить работу): ").strip().lower()
+        
+        if user_input == 'выход':
+            print("Адьос")
+            break
+            
+        results = search_movies(user_input)
+        
+        if not results or len(results) == 0:
+            print("ничё нету.")
+        else:
+            display_results(results)
+
+
+if __name__ == "__main__":
+    main()
